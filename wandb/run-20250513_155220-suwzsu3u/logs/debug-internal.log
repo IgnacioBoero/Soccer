@@ -1,0 +1,15 @@
+{"time":"2025-05-13T15:52:20.061673322-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/home/panda/Soccer/wandb/run-20250513_155220-suwzsu3u/logs/debug-core.log"}
+{"time":"2025-05-13T15:52:20.170362626-04:00","level":"INFO","msg":"created new stream","id":"suwzsu3u"}
+{"time":"2025-05-13T15:52:20.170395187-04:00","level":"INFO","msg":"stream: started","id":"suwzsu3u"}
+{"time":"2025-05-13T15:52:20.170460918-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T15:52:20.170480828-04:00","level":"INFO","msg":"sender: started","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T15:52:20.170528609-04:00","level":"INFO","msg":"handler: started","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T15:52:20.398246997-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-13T16:32:41.477284753-04:00","level":"INFO","msg":"stream: closing","id":"suwzsu3u"}
+{"time":"2025-05-13T16:32:41.477321483-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-13T16:32:41.477892974-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-13T16:32:41.896105895-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-05-13T16:32:41.996274906-04:00","level":"INFO","msg":"handler: closed","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T16:32:41.996301766-04:00","level":"INFO","msg":"sender: closed","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T16:32:41.996299766-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"suwzsu3u"}
+{"time":"2025-05-13T16:32:41.996423839-04:00","level":"INFO","msg":"stream: closed","id":"suwzsu3u"}

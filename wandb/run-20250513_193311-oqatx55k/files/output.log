@@ -1,0 +1,148 @@
+[33m[W 2025-05-13 19:37:09,340][0m Trial 0 failed with parameters: {'lr': 3.678926151710537e-05, 'weight_decay': 4.0405431371071835e-05, 'batch_size': 32, 'n_layers': 5, 'hidden_dim': 256} because of the following error: KeyboardInterrupt().[0m
+[Epoch 1/10] train_loss=0.2659 | val_loss=0.2114
+[Epoch 2/10] train_loss=0.2433 | val_loss=0.2262
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 484, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type,device),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 470, in _objective
+    trainer.train()
+  File "/home/panda/Soccer/train.py", line 403, in train
+    val_loss = self._epoch(self.val_loader, False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 375, in _epoch
+    targets = self.target_computer.compute(batch, self.q_target, self.device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 166, in compute
+    next_q = q_net(batch["next_state"].to(device), batch["next_action"].to(device)).detach()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 134, in forward
+    return self.fc(x).squeeze(-1)  # (B,)
+           ^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/linear.py", line 125, in forward
+    return F.linear(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+[33m[W 2025-05-13 19:37:09,342][0m Trial 0 failed with value None.[0m
+Traceback (most recent call last):
+  File "/home/panda/Soccer/train.py", line 511, in <module>
+    run_optuna(args.shards, args.trials, args.epochs, args.target, args.device)
+  File "/home/panda/Soccer/train.py", line 483, in run_optuna
+    study.optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/study.py", line 475, in optimize
+    _optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial = _run_trial(study, func, catch)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 248, in _run_trial
+    raise func_err
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 484, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type,device),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 470, in _objective
+    trainer.train()
+  File "/home/panda/Soccer/train.py", line 403, in train
+    val_loss = self._epoch(self.val_loader, False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 375, in _epoch
+    targets = self.target_computer.compute(batch, self.q_target, self.device)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 166, in compute
+    next_q = q_net(batch["next_state"].to(device), batch["next_action"].to(device)).detach()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 134, in forward
+    return self.fc(x).squeeze(-1)  # (B,)
+           ^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/container.py", line 240, in forward
+    input = module(input)
+            ^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1751, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1762, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/nn/modules/linear.py", line 125, in forward
+    return F.linear(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+Exception ignored in atexit callback: <function _MultiProcessingDataLoaderIter._clean_up_worker at 0x7b2a089865c0>
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1657, in _clean_up_worker
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/process.py", line 149, in join
+    res = self._popen.wait(timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/popen_fork.py", line 40, in wait
+    if not wait([self.sentinel], timeout):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/connection.py", line 1136, in wait
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt:
+Exception ignored in atexit callback: <function _MultiProcessingDataLoaderIter._clean_up_worker at 0x7b2a089865c0>
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1657, in _clean_up_worker
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/process.py", line 149, in join
+    res = self._popen.wait(timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/popen_fork.py", line 40, in wait
+    if not wait([self.sentinel], timeout):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/connection.py", line 1136, in wait
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/selectors.py", line 425, in select
+    key = self._key_from_fd(fd)
+          ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/selectors.py", line 275, in _key_from_fd
+    def _key_from_fd(self, fd):
+
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/_utils/signal_handling.py", line 73, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 2185751) exited unexpectedly with exit code 1. Details are lost due to multiprocessing. Rerunning with num_workers=0 may give better error trace.

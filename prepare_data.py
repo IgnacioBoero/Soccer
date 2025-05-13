@@ -108,8 +108,8 @@ def resolve_player_lists(raw_traj: List[Dict[str, Any]]) -> List[List[Dict[str, 
         elif raw_lists[i] is not None:
             next_valid = raw_lists[i]
 
-    # guarantee no Nones (edge case: entire traj missing) --------------- #
     if any(lst is None for lst in raw_lists):
+        print("WARNING: Some or all player lists might be missing. Replacing with empty lists.")
         empty: List[Dict[str, Any]] = []
         raw_lists = [lst or empty for lst in raw_lists]
     return raw_lists
@@ -139,8 +139,8 @@ def process_single_traj(traj: List[Dict[str, Any]],
             "state": torch.tensor(state_arr),
             "action": torch.tensor(encode_action(evt)),
             "reward": 0.0,  # placeholder
-            "next_state": None,
-            "next_action": None,
+            "next_state": torch.zeros((4, 104, 68), dtype=torch.float32),
+            "next_action": torch.zeros(7, dtype=torch.float32),
             "done": False,
             "traj_id": traj_id,
             "t": t,
@@ -169,18 +169,19 @@ def process_single_traj(traj: List[Dict[str, Any]],
 # --------------------------------------------------------------------------- #
 
 def write_shard(buf: List[List[Dict[str, Any]]], idx: int, out_dir: Path):
+    """Flatten trajectory lists into one list of steps and pickle it."""
+    flat = [s for traj in buf for s in traj]
     out_path = out_dir / f"trajectories_{idx:03d}.pkl"
     with out_path.open("wb") as f:
-        pickle.dump(buf, f, protocol=pickle.HIGHEST_PROTOCOL)
-    print(f"  • wrote {len(buf)} trajectories → {out_path}")
-    
+        pickle.dump(flat, f, protocol=pickle.HIGHEST_PROTOCOL)
+    print(f"  • wrote {len(flat)} transitions from {len(buf)} trajectories → {out_path}")
     
 def cli():
     ap = argparse.ArgumentParser("Prepare soccer data (sharded, robust)")
     ap.add_argument("--input", "-i", type=Path, default='data/trajectories_left2right.pkl')
     ap.add_argument("--outdir", "-o", type=Path, default='data/processed')
-    ap.add_argument("--shard-size", "-n", type=int, default=100)
-    ap.add_argument("--gamma", type=float, default=0.99)
+    ap.add_argument("--shard-size", "-n", type=int, default=1000)
+    ap.add_argument("--gamma", type=float, default=0.9)
     args = ap.parse_args()
 
     args.outdir.mkdir(parents=True, exist_ok=True)

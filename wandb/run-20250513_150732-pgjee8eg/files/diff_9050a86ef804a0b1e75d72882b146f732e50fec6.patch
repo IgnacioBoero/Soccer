@@ -1,0 +1,150 @@
+diff --git a/prepare_data.py b/prepare_data.py
+index 485570d..851a71c 100644
+--- a/prepare_data.py
++++ b/prepare_data.py
+@@ -179,8 +179,8 @@ def cli():
+     ap = argparse.ArgumentParser("Prepare soccer data (sharded, robust)")
+     ap.add_argument("--input", "-i", type=Path, default='data/trajectories_left2right.pkl')
+     ap.add_argument("--outdir", "-o", type=Path, default='data/processed')
+-    ap.add_argument("--shard-size", "-n", type=int, default=100)
+-    ap.add_argument("--gamma", type=float, default=0.99)
++    ap.add_argument("--shard-size", "-n", type=int, default=1000)
++    ap.add_argument("--gamma", type=float, default=0.9)
+     args = ap.parse_args()
+ 
+     args.outdir.mkdir(parents=True, exist_ok=True)
+diff --git a/test.ipynb b/test.ipynb
+index 37c6671..90da64d 100644
+--- a/test.ipynb
++++ b/test.ipynb
+@@ -219,11 +219,61 @@
+     "    buf.append(process_single_traj(traj, traj_id, 0.9))\n",
+     "\n"
+    ]
++  },
++  {
++   "cell_type": "markdown",
++   "metadata": {},
++   "source": [
++    "## Processed Fata VIsualtization"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 8,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "import pickle, random, torch\n",
++    "from torch.utils.data import IterableDataset\n",
++    "from pathlib import Path\n",
++    "\n",
++    "class ShardedSoccerDataset(IterableDataset):\n",
++    "    def __init__(self, shard_dir: str | Path, shuffle_shards=True):\n",
++    "        self.paths = sorted(Path(shard_dir).glob(\"*.pkl\"))\n",
++    "        self.shuffle_shards = shuffle_shards\n",
++    "\n",
++    "    def __iter__(self):\n",
++    "        paths = self.paths.copy()\n",
++    "        if self.shuffle_shards:\n",
++    "            random.shuffle(paths)        # order of shards each epoch\n",
++    "        for p in paths:\n",
++    "            with p.open(\"rb\") as f:\n",
++    "                shard = pickle.load(f)   # load ONE shard into RAM\n",
++    "            random.shuffle(shard)        # in-shard shuffle\n",
++    "            for traj in shard:\n",
++    "                for sample in traj:\n",
++    "                    yield sample             # hand a single transition to DataLoader\n",
++    "\n",
++    "\n",
++    "dataset = ShardedSoccerDataset((Path('./data/processed')))"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 9,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "from torch.utils.data import Dataset, DataLoader\n",
++    "loader = DataLoader(dataset, batch_size=4,\n",
++    "                                 shuffle=not True, num_workers=4,\n",
++    "                                 pin_memory=True, persistent_workers=True) "
++   ]
+   }
+  ],
+  "metadata": {
+   "kernelspec": {
+-   "display_name": "meam6000",
++   "display_name": "pda",
+    "language": "python",
+    "name": "python3"
+   },
+@@ -237,7 +287,7 @@
+    "name": "python",
+    "nbconvert_exporter": "python",
+    "pygments_lexer": "ipython3",
+-   "version": "3.8.20"
++   "version": "3.13.2"
+   }
+  },
+  "nbformat": 4,
+diff --git a/train.py b/train.py
+index 84072c3..1516f32 100644
+--- a/train.py
++++ b/train.py
+@@ -14,7 +14,6 @@ import wandb
+ 
+ # --------------------------------------------------------------------------- #
+ #                          Model architecture                                 #
+-# --------------------------------------------------------------------------- #
+ class StateEncoderCNN(nn.Module):
+     """CNN that maps 4×104×68 tensors → state embedding."""
+ 
+@@ -23,12 +22,14 @@ class StateEncoderCNN(nn.Module):
+         self.net = nn.Sequential(
+             nn.Conv2d(in_channels, 32, kernel_size=5, stride=2, padding=2),  # → 32×52×34
+             nn.ReLU(inplace=True),
+-            nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),           # → 64×26×17
++            nn.MaxPool2d(kernel_size=2, stride=2),                           # → 32×26×17
++            nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),           # → 64×13×9
+             nn.ReLU(inplace=True),
+-            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),          # → 128×13×9
++            nn.MaxPool2d(kernel_size=2, stride=2),                           # → 64×6×4
++            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),          # → 128×3×2
+             nn.ReLU(inplace=True),
+             nn.Flatten(),
+-            nn.Linear(128 * 13 * 9, out_dim),
++            nn.Linear(128 * 3 * 2, out_dim),
+             nn.ReLU(inplace=True),
+         )
+ 
+@@ -211,8 +212,9 @@ class ShardedSoccerDataset(IterableDataset):
+             with p.open("rb") as f:
+                 shard = pickle.load(f)   # load ONE shard into RAM
+             random.shuffle(shard)        # in-shard shuffle
+-            for sample in shard:
+-                yield sample             # hand a single transition to DataLoader
++            for traj in shard:
++                for sample in traj:
++                    yield sample             # hand a single transition to DataLoader
+                 
+ # --------------------------------------------------------------------------- #
+ #                               Entry point                                   #
+@@ -222,14 +224,13 @@ if __name__ == '__main__':
+     import argparse
+ 
+     ap = argparse.ArgumentParser()
+-    ap.add_argument('--shards', default='./data/processed', type=Path,
++    ap.add_argument('--shards', default=Path('./data/processed'), type=Path,
+                     help='Directory containing shard .pkl files')
+     ap.add_argument('--epochs', type=int, default=10)
+     ap.add_argument('--target', choices=['mc', 'td0'], default='td0')
+     args = ap.parse_args()
+ 
+-    shard_paths = sorted(args.shards.glob('*.pkl'))
+-    dataset = ShardedSoccerDataset(shard_paths)
++    dataset = ShardedSoccerDataset(args.shards)
+ 
+     q_net = QNetwork()
+     trainer = Trainer(q_net, dataset, epochs=args.epochs, target_type=args.target)

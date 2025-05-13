@@ -1,0 +1,43 @@
+[Epoch 1/10] loss 7.8497
+[Epoch 2/10] loss 1.1466
+[Epoch 3/10] loss 210.0401
+Traceback (most recent call last):
+  File "/home/panda/Soccer/train.py", line 235, in <module>
+  File "/home/panda/Soccer/train.py", line 177, in train
+    ):
+
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 733, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1491, in _next_data
+    idx, data = self._get_data()
+                ^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1443, in _get_data
+    success, data = self._try_get_data()
+                    ^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1284, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/queue.py", line 180, in get
+    self.not_empty.wait(remaining)
+  File "/home/panda/miniconda3/lib/python3.12/threading.py", line 359, in wait
+    gotit = waiter.acquire(True, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+Exception ignored in atexit callback: <function _MultiProcessingDataLoaderIter._clean_up_worker at 0x7a644fb4b4c0>
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/utils/data/dataloader.py", line 1657, in _clean_up_worker
+    w.join(timeout=_utils.MP_STATUS_CHECK_INTERVAL)
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/process.py", line 149, in join
+    res = self._popen.wait(timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/popen_fork.py", line 40, in wait
+    if not wait([self.sentinel], timeout):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/multiprocessing/connection.py", line 1136, in wait
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt:

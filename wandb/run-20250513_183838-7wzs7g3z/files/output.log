@@ -1,0 +1,60 @@
+[32m[I 2025-05-13 18:47:13,472][0m Trial 0 finished with value: 65.2162429767929 and parameters: {'lr': 0.00022255584212095352, 'weight_decay': 2.9598939047955304e-05, 'batch_size': 64, 'n_layers': 5, 'hidden_dim': 512}. Best is trial 0 with value: 65.2162429767929.[0m
+[Epoch 1/5] train_loss=55.4547 | val_loss=50.4650
+[Epoch 2/5] train_loss=33.4509 | val_loss=57.5267
+[Epoch 3/5] train_loss=20.5592 | val_loss=78.0618
+[Epoch 4/5] train_loss=13.1198 | val_loss=59.1758
+[Epoch 5/5] train_loss=9.2167 | val_loss=65.2162
+/home/panda/Soccer/train.py:437: FutureWarning: suggest_loguniform has been deprecated in v3.0.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v3.0.0. Use suggest_float(..., log=True) instead.
+  lr = trial.suggest_loguniform("lr", 1e-5, 1e-3)
+/home/panda/Soccer/train.py:438: FutureWarning: suggest_loguniform has been deprecated in v3.0.0. This feature will be removed in v6.0.0. See https://github.com/optuna/optuna/releases/tag/v3.0.0. Use suggest_float(..., log=True) instead.
+  weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-2)
+Computing stats:  33%|██████████████████████████████████▎                                                                    | 1/3 [00:03<00:07,  3.93s/it]
+[33m[W 2025-05-13 18:47:17,406][0m Trial 1 failed with parameters: {'lr': 2.709197135062196e-05, 'weight_decay': 0.0004009238103589088, 'batch_size': 32, 'n_layers': 4, 'hidden_dim': 1024} because of the following error: KeyboardInterrupt().[0m
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 471, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 446, in _objective
+    stats = compute_stats(train_paths)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 217, in compute_stats
+    shard = pickle.load(f)
+            ^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/storage.py", line 529, in _load_from_bytes
+    def _load_from_bytes(b):
+
+KeyboardInterrupt
+[33m[W 2025-05-13 18:47:17,407][0m Trial 1 failed with value None.[0m
+Traceback (most recent call last):
+  File "/home/panda/Soccer/train.py", line 496, in <module>
+    run_optuna(args.shards, args.trials, args.epochs, args.target)
+  File "/home/panda/Soccer/train.py", line 470, in run_optuna
+    study.optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/study.py", line 475, in optimize
+    _optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial = _run_trial(study, func, catch)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 248, in _run_trial
+    raise func_err
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 471, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 446, in _objective
+    stats = compute_stats(train_paths)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 217, in compute_stats
+    shard = pickle.load(f)
+            ^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/torch/storage.py", line 529, in _load_from_bytes
+    def _load_from_bytes(b):
+
+KeyboardInterrupt

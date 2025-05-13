@@ -1,0 +1,59 @@
+[33m[W 2025-05-13 19:29:14,225][0m Trial 0 failed with parameters: {'lr': 2.2220791510081246e-05, 'weight_decay': 0.0055819352216376255, 'batch_size': 128, 'n_layers': 4, 'hidden_dim': 512} because of the following error: RuntimeError('Expected all tensors to be on the same device, but found at least two devices, cuda:1 and cuda:0!').[0m
+Traceback (most recent call last):
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 483, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type,device),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 469, in _objective
+    trainer.train()
+  File "/home/panda/Soccer/train.py", line 401, in train
+    tr_loss = self._epoch(self.train_loader, True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 372, in _epoch
+    batch = self._normalise_batch(batch_raw)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 352, in _normalise_batch
+    batch["state"] = self.norm.state(batch["state"].to(self.device))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 52, in state
+    return (x - self.state_mean) / self.state_std
+            ~~^~~~~~~~~~~~~~~~~
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:1 and cuda:0!
+[33m[W 2025-05-13 19:29:14,226][0m Trial 0 failed with value None.[0m
+Traceback (most recent call last):
+  File "/home/panda/Soccer/train.py", line 510, in <module>
+    run_optuna(args.shards, args.trials, args.epochs, args.target, args.device)
+  File "/home/panda/Soccer/train.py", line 482, in run_optuna
+    study.optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/study.py", line 475, in optimize
+    _optimize(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 63, in _optimize
+    _optimize_sequential(
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 160, in _optimize_sequential
+    frozen_trial = _run_trial(study, func, catch)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 248, in _run_trial
+    raise func_err
+  File "/home/panda/miniconda3/lib/python3.12/site-packages/optuna/study/_optimize.py", line 197, in _run_trial
+    value_or_values = func(trial)
+                      ^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 483, in <lambda>
+    lambda t: _objective(t, train_paths, val_paths, epochs, target_type,device),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 469, in _objective
+    trainer.train()
+  File "/home/panda/Soccer/train.py", line 401, in train
+    tr_loss = self._epoch(self.train_loader, True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 372, in _epoch
+    batch = self._normalise_batch(batch_raw)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 352, in _normalise_batch
+    batch["state"] = self.norm.state(batch["state"].to(self.device))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/panda/Soccer/train.py", line 52, in state
+    return (x - self.state_mean) / self.state_std
+            ~~^~~~~~~~~~~~~~~~~
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:1 and cuda:0!

@@ -1,0 +1,23 @@
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_setup.py:_flush():67] Current SDK version is 0.19.8
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_setup.py:_flush():67] Configure stats pid to 2186110
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_setup.py:_flush():67] Loading settings from /home/panda/.config/wandb/settings
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_setup.py:_flush():67] Loading settings from /home/panda/Soccer/wandb/settings
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_setup.py:_flush():67] Loading settings from environment variables
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_193458-c2nge554/logs/debug.log
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_193458-c2nge554/logs/debug-internal.log
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:init():761] calling init triggers
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 32, 'lr': 0.00010968135897761278, 'weight_decay': 1.6068930163566196e-05, 'epochs': 10, 'gamma': 0.99, 'target_type': 'mc', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:init():784] starting backend
+2025-05-13 19:34:58,120 INFO    MainThread:2186110 [wandb_init.py:init():788] sending inform_init request
+2025-05-13 19:34:58,126 INFO    MainThread:2186110 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-05-13 19:34:58,126 INFO    MainThread:2186110 [wandb_init.py:init():798] backend started and connected
+2025-05-13 19:34:58,127 INFO    MainThread:2186110 [wandb_init.py:init():891] updated telemetry
+2025-05-13 19:34:58,132 INFO    MainThread:2186110 [wandb_init.py:init():915] communicating run to backend with 90.0 second timeout
+2025-05-13 19:34:58,459 INFO    MainThread:2186110 [wandb_init.py:init():990] starting run threads in backend
+2025-05-13 19:34:59,516 INFO    MainThread:2186110 [wandb_run.py:_console_start():2375] atexit reg
+2025-05-13 19:34:59,516 INFO    MainThread:2186110 [wandb_run.py:_redirect():2227] redirect: wrap_raw
+2025-05-13 19:34:59,516 INFO    MainThread:2186110 [wandb_run.py:_redirect():2292] Wrapping output streams.
+2025-05-13 19:34:59,516 INFO    MainThread:2186110 [wandb_run.py:_redirect():2315] Redirects installed.
+2025-05-13 19:34:59,518 INFO    MainThread:2186110 [wandb_init.py:init():1032] run started, returning control to user process
+2025-05-13 19:37:09,518 INFO    MsgRouterThr:2186110 [mailbox.py:close():129] Closing mailbox, abandoning 1 handles.

@@ -1,0 +1,13 @@
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_185435-alsnwrbu/logs/debug.log
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_185435-alsnwrbu/logs/debug-internal.log
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():761] calling init triggers
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 32, 'lr': 0.0001459745639570123, 'weight_decay': 2.0852690819578818e-06, 'epochs': 5, 'gamma': 0.99, 'target_type': 'td0', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():776] wandb.init() called while a run is active
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_190004-b3iperce/logs/debug.log
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_190004-b3iperce/logs/debug-internal.log
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():761] calling init triggers
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 128, 'lr': 3.81321006664897e-05, 'weight_decay': 0.0008256847294080447, 'epochs': 5, 'gamma': 0.99, 'target_type': 'td0', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():776] wandb.init() called while a run is active
+2025-05-13 19:01:31,257 INFO    MsgRouterThr:2145486 [mailbox.py:close():129] Closing mailbox, abandoning 1 handles.

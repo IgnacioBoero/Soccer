@@ -1,0 +1,7 @@
+2025-05-13 19:40:24,383 INFO    MainThread:2188669 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_194024-22i4573b/logs/debug.log
+2025-05-13 19:40:24,383 INFO    MainThread:2188669 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_194024-22i4573b/logs/debug-internal.log
+2025-05-13 19:40:24,383 INFO    MainThread:2188669 [wandb_init.py:init():761] calling init triggers
+2025-05-13 19:40:24,383 INFO    MainThread:2188669 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 32, 'lr': 1.0302591674213419e-05, 'weight_decay': 0.0019937628288303443, 'epochs': 2, 'gamma': 0.99, 'target_type': 'mc', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 19:40:24,383 INFO    MainThread:2188669 [wandb_init.py:init():776] wandb.init() called while a run is active
+2025-05-13 19:40:53,692 INFO    MsgRouterThr:2188669 [mailbox.py:close():129] Closing mailbox, abandoning 1 handles.

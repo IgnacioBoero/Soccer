@@ -1,0 +1,35 @@
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_setup.py:_flush():67] Current SDK version is 0.19.8
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_setup.py:_flush():67] Configure stats pid to 2145486
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_setup.py:_flush():67] Loading settings from /home/panda/.config/wandb/settings
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_setup.py:_flush():67] Loading settings from /home/panda/Soccer/wandb/settings
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_setup.py:_flush():67] Loading settings from environment variables
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_185105-octughkl/logs/debug.log
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_185105-octughkl/logs/debug-internal.log
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:init():761] calling init triggers
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 128, 'lr': 0.00041124322319356394, 'weight_decay': 2.4428201493298726e-06, 'epochs': 5, 'gamma': 0.99, 'target_type': 'td0', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:init():784] starting backend
+2025-05-13 18:51:05,777 INFO    MainThread:2145486 [wandb_init.py:init():788] sending inform_init request
+2025-05-13 18:51:05,783 INFO    MainThread:2145486 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-05-13 18:51:05,784 INFO    MainThread:2145486 [wandb_init.py:init():798] backend started and connected
+2025-05-13 18:51:05,785 INFO    MainThread:2145486 [wandb_init.py:init():891] updated telemetry
+2025-05-13 18:51:05,790 INFO    MainThread:2145486 [wandb_init.py:init():915] communicating run to backend with 90.0 second timeout
+2025-05-13 18:51:06,122 INFO    MainThread:2145486 [wandb_init.py:init():990] starting run threads in backend
+2025-05-13 18:51:07,244 INFO    MainThread:2145486 [wandb_run.py:_console_start():2375] atexit reg
+2025-05-13 18:51:07,244 INFO    MainThread:2145486 [wandb_run.py:_redirect():2227] redirect: wrap_raw
+2025-05-13 18:51:07,244 INFO    MainThread:2145486 [wandb_run.py:_redirect():2292] Wrapping output streams.
+2025-05-13 18:51:07,244 INFO    MainThread:2145486 [wandb_run.py:_redirect():2315] Redirects installed.
+2025-05-13 18:51:07,246 INFO    MainThread:2145486 [wandb_init.py:init():1032] run started, returning control to user process
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_185435-alsnwrbu/logs/debug.log
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_185435-alsnwrbu/logs/debug-internal.log
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():761] calling init triggers
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 32, 'lr': 0.0001459745639570123, 'weight_decay': 2.0852690819578818e-06, 'epochs': 5, 'gamma': 0.99, 'target_type': 'td0', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 18:54:35,301 INFO    MainThread:2145486 [wandb_init.py:init():776] wandb.init() called while a run is active
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():647] Logging user logs to /home/panda/Soccer/wandb/run-20250513_190004-b3iperce/logs/debug.log
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to /home/panda/Soccer/wandb/run-20250513_190004-b3iperce/logs/debug-internal.log
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():761] calling init triggers
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'batch_size': 128, 'lr': 3.81321006664897e-05, 'weight_decay': 0.0008256847294080447, 'epochs': 5, 'gamma': 0.99, 'target_type': 'td0', '_wandb': {'code_path': 'code/train.py'}}
+2025-05-13 19:00:04,395 INFO    MainThread:2145486 [wandb_init.py:init():776] wandb.init() called while a run is active
+2025-05-13 19:01:31,257 INFO    MsgRouterThr:2145486 [mailbox.py:close():129] Closing mailbox, abandoning 1 handles.

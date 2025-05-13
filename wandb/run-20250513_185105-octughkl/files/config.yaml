@@ -1,0 +1,38 @@
+_wandb:
+    value:
+        cli_version: 0.19.8
+        code_path: code/train.py
+        m: []
+        python_version: 3.12.7
+        t:
+            "1":
+                - 1
+                - 35
+                - 55
+            "2":
+                - 1
+                - 35
+                - 55
+            "3":
+                - 16
+                - 23
+                - 24
+                - 55
+            "4": 3.12.7
+            "5": 0.19.8
+            "8":
+                - 5
+            "12": 0.19.8
+            "13": linux-x86_64
+batch_size:
+    value: 128
+epochs:
+    value: 5
+gamma:
+    value: 0.99
+lr:
+    value: 0.00041124322319356394
+target_type:
+    value: td0
+weight_decay:
+    value: 2.4428201493298726e-06
