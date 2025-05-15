@@ -1,6 +1,6 @@
 # Offline Q-Function Evaluation for Estimating Soccer Actions Rewards
 
-This repository have the code used for ESE650 Final Project for group 17
+This repository have the code used for ESE650 Final Project for group 19
 
 ## Files
 ### 0. Install dependences
