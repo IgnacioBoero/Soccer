@@ -16,6 +16,8 @@ from tqdm.auto import tqdm
 import copy
 
 
+
+# Normalization utils
 @dataclass
 class Stats:
     state_mean: torch.Tensor  # (4,)
@@ -29,7 +31,7 @@ class Stats:
 
 
 class Normaliser:
-
+    # Norm stats
     def __init__(self, stats: Stats, device: torch.device | str = "cpu"):
         self.state_mean = stats.state_mean.to(device).view(4, 1, 1)
         self.state_std = stats.state_std.to(device).view(4, 1, 1)
@@ -39,11 +41,11 @@ class Normaliser:
         self.reward_std = torch.tensor(stats.reward_std, device=device)
         self.G_mean = torch.tensor(stats.G_mean, device=device)
         self.G_std = torch.tensor(stats.G_std, device=device)
-    # --------------------------- transform fns ---------------------------- #
 
+    # Execute normalization
     def state(self, x: torch.Tensor) -> torch.Tensor:
-        # return (x - self.state_mean) / self.state_std
-        return x
+        return (x - self.state_mean) / self.state_std
+        #return x
     def action(self, a: torch.Tensor) -> torch.Tensor:
         return (a - self.action_mean) / self.action_std
 
@@ -54,14 +56,10 @@ class Normaliser:
         return (t - self.G_mean) / self.G_std
 
 
-# --------------------------------------------------------------------------- #
-#                              Model                                          #
-# --------------------------------------------------------------------------- #
 
 
+## STATE ENCODER ARQ
 class StateEncoderCNN(nn.Module):
-    """CNN that maps 4×104×68 tensors → state embedding."""
-
     def __init__(self, in_channels: int = 4, out_dim: int = 256, p_drop=0.0):
         super().__init__()
         self.net = nn.Sequential(
@@ -82,14 +80,11 @@ class StateEncoderCNN(nn.Module):
             nn.Linear(128 * 3 * 2, out_dim),
             nn.ReLU(inplace=True),
         )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # x: (B, 4, 104, 68)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
 
-
+## ACTION ENCODER ARQ
 class ActionEncoderFC(nn.Module):
-    """FC network mapping 7‑D action vector → action embedding."""
-
     def __init__(self, in_dim: int = 7, out_dim: int = 128, p_drop=0.0):
         super().__init__()
         self.net = nn.Sequential(
@@ -100,14 +95,11 @@ class ActionEncoderFC(nn.Module):
             nn.ReLU(inplace=True),
             nn.Dropout(p_drop),
         )
-
-    def forward(self, a: torch.Tensor) -> torch.Tensor:  # a: (B, 7)
+    def forward(self, a: torch.Tensor) -> torch.Tensor:
         return self.net(a)
 
-
+## Q NET ARQ
 class QNetwork(nn.Module):
-    """Q‑network Q(s, a) with variable FC depth (no final ReLU)."""
-
     def __init__(
         self,
         hidden_layers: Sequence[int] | None = None,
@@ -125,26 +117,22 @@ class QNetwork(nn.Module):
         for h in hidden_layers:
             layers.extend([nn.Linear(in_dim, h), nn.ReLU(inplace=True)])
             in_dim = h
-        layers.append(nn.Linear(in_dim, 1))  # **no** activation afterwards
+        layers.append(nn.Linear(in_dim, 1))
         self.fc = nn.Sequential(*layers)
 
     def forward(self, state_tensor: torch.Tensor, action_vec: torch.Tensor) -> torch.Tensor:
         s_emb = self.state_encoder(state_tensor)
         a_emb = self.action_encoder(action_vec)
         x = torch.cat([s_emb, a_emb], dim=-1)
-        return self.fc(x).squeeze(-1)  # (B,)
+        return self.fc(x).squeeze(-1)
 
 
-# --------------------------------------------------------------------------- #
-#                       Target computation utilities                           #
-# --------------------------------------------------------------------------- #
+
+
+## AUX FUNCTION TO GET THE TARGET (MC or TD0)
 
 TargetType = Literal["mc", "td0"]
-
-
 class TargetComputer:
-    """Compute TD‑ or Monte‑Carlo targets and apply normalisation consistently."""
-
     def __init__(
         self,
         gamma: float,
@@ -154,13 +142,10 @@ class TargetComputer:
         self.gamma = gamma
         self.target_type = target_type
         self.norm = normaliser
-
     def compute(self, batch: Dict[str, torch.Tensor], q_net: QNetwork, device: torch.device):
         rewards = batch["reward"].to(device)
         dones = batch["done"].to(device)
         Gs = batch["G"].to(device)
-        
-        
         if self.target_type == "mc":
             raw_targets = Gs
         elif self.target_type == "td0":
@@ -168,21 +153,15 @@ class TargetComputer:
             raw_targets = rewards + self.gamma * next_q * (~dones)
         else:
             raise ValueError(self.target_type)
-
         return (raw_targets - self.norm.G_mean) / self.norm.G_std
 
-# --------------------------------------------------------------------------- #
-#                               Dataset                                       #
-# --------------------------------------------------------------------------- #
 
 
+## ITERABLE DATASET FOR SMALL SHARDS
 class ShardedSoccerDataset(IterableDataset):
-    """Iterates over pickle shards lazily (might shuffle per‑epoch)."""
-
     def __init__(self, shard_paths: Sequence[Path], shuffle_shards: bool = True):
         self.paths = list(shard_paths)
         self.shuffle = shuffle_shards
-
     def __iter__(self):
         paths = self.paths.copy()
         if self.shuffle:
@@ -196,15 +175,9 @@ class ShardedSoccerDataset(IterableDataset):
                 yield sample
 
 
-# --------------------------------------------------------------------------- #
-#              Statistics computation (only from training shards)            #
-# --------------------------------------------------------------------------- #
-
-
+## GET NORMALIZATION VALUES FROM TRAINING DATA
 def compute_stats(shard_paths: Sequence[Path]) -> Stats:
-    """Stream over training shards once to get mean / std."""
 
-    # running sums for state (4 channels) and action (7‑D)
     state_sum = torch.zeros(4)
     state_sq = torch.zeros(4)
     action_sum = torch.zeros(7)
@@ -220,12 +193,10 @@ def compute_stats(shard_paths: Sequence[Path]) -> Stats:
         with p.open("rb") as f:
             shard = pickle.load(f)
         for s in shard:
-            state = torch.as_tensor(s["state"], dtype=torch.float32)  # (4,104,68)
-            action = torch.as_tensor(s["action"], dtype=torch.float32)  # (7,)
+            state = torch.as_tensor(s["state"], dtype=torch.float32)
+            action = torch.as_tensor(s["action"], dtype=torch.float32)
             reward = float(s["reward"])
             G = float(s["G"])
-
-            # state per‑channel mean / var over ALL pixels
             ch_means = state.view(4, -1).mean(dim=1)
             ch_vars = state.view(4, -1).var(dim=1, unbiased=False)
             state_sum += ch_means
@@ -240,7 +211,7 @@ def compute_stats(shard_paths: Sequence[Path]) -> Stats:
             G_sum += G
             G_sq += G ** 2
 
-            n_state_pix += 1  # we aggregated over pixels already, so count per‑sample
+            n_state_pix += 1
             n_samples += 1
 
     state_mean = state_sum / n_state_pix
@@ -267,12 +238,8 @@ def compute_stats(shard_paths: Sequence[Path]) -> Stats:
     )
 
 
-# --------------------------------------------------------------------------- #
-#                             Data split util                                 #
-# --------------------------------------------------------------------------- #
-
-
-def make_train_val(shards_dir: Path, val_ratio: float = 1 / 6, seed: int = 42):
+## AUX FUNCTION TO GET TRAIN AND VAL PATHS SHARDS
+def make_train_val(shards_dir: Path):
     train_path = shards_dir / "train"
     train_paths = sorted(train_path.glob("*.pkl"))
     val_path = shards_dir / "val"
@@ -280,11 +247,7 @@ def make_train_val(shards_dir: Path, val_ratio: float = 1 / 6, seed: int = 42):
     return train_paths, val_paths
 
 
-# --------------------------------------------------------------------------- #
-#                               Trainer                                       #
-# --------------------------------------------------------------------------- #
-
-
+## TRAINER
 class Trainer:
     def __init__(
         self,
@@ -349,8 +312,8 @@ class Trainer:
             ),
         )
 
-    # --------------------- internal helpers -------------------------------- #
-
+    
+    # AUX FUNCTION TO NORMALIZE ALL ENTRIES OF THE BATCH
     def _normalise_batch(self, batch: Dict[str, torch.Tensor]):
         batch["state"] = self.norm.state(batch["state"].to(self.device))
         batch["next_state"] = self.norm.state(batch["next_state"].to(self.device))
@@ -365,6 +328,7 @@ class Trainer:
         batch["done"] = torch.as_tensor(batch["done"], device=self.device, dtype=torch.bool)
         return batch
 
+    # RUN ONE EPOCH
     def _epoch(self, loader: DataLoader, train: bool):
         self.q_net.train(train)
         mode = "train" if train else "val"
@@ -396,10 +360,10 @@ class Trainer:
 
         return total_loss / max(samples, 1)
 
-    # ------------------------- public API ---------------------------------- #
-
+    ## MAIN TRAIN FUNCTION
     def train(self):
         best_val, patience = float("inf"), 10
+        # Iterate over epochs
         for epoch in range(1, self.epochs + 1):
             self.current_epoch = epoch
             tr_loss = self._epoch(self.train_loader, True)
@@ -423,18 +387,12 @@ class Trainer:
         wandb.log({"final/val_loss": self.evaluate()})
         wandb.finish()
 
-
+    # EVAL AUX
     def evaluate(self):
         return self._epoch(self.val_loader, False)
 
+    # SAVE WEITGHTS AND NORMALIZER VALUES
     def save(self, path: Path | str):
-            """
-            Save a complete checkpoint:
-            - Q-network (incl. both encoders) weights
-            - optimiser state (optional but handy for resuming)
-            - all z-score normalisation parameters
-            """
-            # Collect normalisation tensors on CPU so the file is portable
             norm_state = {
                 "state_mean": self.norm.state_mean.cpu(),
                 "state_std":  self.norm.state_std.cpu(),
@@ -452,27 +410,27 @@ class Trainer:
                 "normaliser": norm_state,
             }
             torch.save(checkpoint, str(path))
-# --------------------------------------------------------------------------- #
-#                       Optuna hyper‑parameter search                         #
-# --------------------------------------------------------------------------- #
 
+
+
+
+## OPTUNA HYPERPARAMETERS SEARCH
 
 def _objective(trial: optuna.Trial, train_paths: List[Path], val_paths: List[Path], epochs: int, target_type: str, device):
     # hyper‑parameters
     lr = trial.suggest_loguniform("lr", 1e-4, 1e-3)
     weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-4)
     batch_size = trial.suggest_categorical("batch_size", [32, 64, 128])
-
-    # network structure
     n_layers = trial.suggest_int("n_layers", 3, 5)
     hidden_dim = trial.suggest_categorical("hidden_dim", [512])
     hidden_layers = [hidden_dim] * n_layers
-
     p_drop = trial.suggest_float("p_drop", 0.0, 0.1, step=0.05)
 
+    # Get norm stats
     stats = compute_stats(train_paths)
     norm = Normaliser(stats, device)
 
+    # Train
     q_net = QNetwork(hidden_layers=hidden_layers,p_drop=p_drop)
     trainer = Trainer(
         q_net,
@@ -494,8 +452,8 @@ def _objective(trial: optuna.Trial, train_paths: List[Path], val_paths: List[Pat
     return trainer.evaluate()
 
 
-
-def run_optuna(shards_dir: Path, trials: int, epochs: int, target_type: str, device):
+## OPTUNA MAIN FUNCTION
+def main(shards_dir: Path, trials: int, epochs: int, target_type: str, device):
     train_paths, val_paths = make_train_val(shards_dir)
     study = optuna.create_study(direction="minimize")
     study.optimize(
@@ -507,23 +465,19 @@ def run_optuna(shards_dir: Path, trials: int, epochs: int, target_type: str, dev
         print(f"  {k}: {v}")
 
 
-# --------------------------------------------------------------------------- #
-#                              CLI entry‑point                                #
-# --------------------------------------------------------------------------- #
-
 
 if __name__ == "__main__":
     import argparse
     random.seed(42)
     torch.manual_seed(42)
+    # Parse args
     ap = argparse.ArgumentParser()
     ap.add_argument("--shards", type=Path, default="./data/processed")
     ap.add_argument("--epochs", type=int, default=10)
     ap.add_argument("--target", choices=["mc", "td0"], default="td0")
     ap.add_argument("--trials" ,type=int, default=64)
     ap.add_argument("--device", type=str, default='cuda:0')
-
     args = ap.parse_args()
-
-    run_optuna(args.shards, args.trials, args.epochs, args.target, args.device)
+    # Train
+    main(args.shards, args.trials, args.epochs, args.target, args.device)
 
