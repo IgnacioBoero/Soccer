@@ -24,4 +24,4 @@ Script to train the models:
 ### 3. eval.ipynb
 Script to evaluate the model
 - Python notebook that loads the model and an event and calculates the return for passes, shot and dribbles
-
+- There is one example for the model output given by the train script in models_example and one example for a processed trajectory on the data_example to use the notebook without needing to process data or train.
