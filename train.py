@@ -15,15 +15,9 @@ from tqdm.auto import tqdm
 
 import copy
 
-# --------------------------------------------------------------------------- #
-#                          Normalisation helpers                              #
-# --------------------------------------------------------------------------- #
-
 
 @dataclass
 class Stats:
-    """Mean / std containers for state, action and reward."""
-
     state_mean: torch.Tensor  # (4,)
     state_std: torch.Tensor   # (4,)
     action_mean: torch.Tensor  # (7,)
@@ -35,7 +29,6 @@ class Stats:
 
 
 class Normaliser:
-    """Applies z‑score normalisation using stored statistics."""
 
     def __init__(self, stats: Stats, device: torch.device | str = "cpu"):
         self.state_mean = stats.state_mean.to(device).view(4, 1, 1)
@@ -49,8 +42,8 @@ class Normaliser:
     # --------------------------- transform fns ---------------------------- #
 
     def state(self, x: torch.Tensor) -> torch.Tensor:
-        return (x - self.state_mean) / self.state_std
-
+        # return (x - self.state_mean) / self.state_std
+        return x
     def action(self, a: torch.Tensor) -> torch.Tensor:
         return (a - self.action_mean) / self.action_std
 
@@ -69,16 +62,21 @@ class Normaliser:
 class StateEncoderCNN(nn.Module):
     """CNN that maps 4×104×68 tensors → state embedding."""
 
-    def __init__(self, in_channels: int = 4, out_dim: int = 256):
+    def __init__(self, in_channels: int = 4, out_dim: int = 256, p_drop=0.0):
         super().__init__()
         self.net = nn.Sequential(
             nn.Conv2d(in_channels, 32, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
+            nn.Dropout2d(p_drop),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),
+            nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
+            nn.Dropout2d(p_drop),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(inplace=True),
             nn.Flatten(),
             nn.Linear(128 * 3 * 2, out_dim),
@@ -92,13 +90,15 @@ class StateEncoderCNN(nn.Module):
 class ActionEncoderFC(nn.Module):
     """FC network mapping 7‑D action vector → action embedding."""
 
-    def __init__(self, in_dim: int = 7, out_dim: int = 128):
+    def __init__(self, in_dim: int = 7, out_dim: int = 128, p_drop=0.0):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(in_dim, 128),
+            nn.Linear(in_dim, 64),
             nn.ReLU(inplace=True),
-            nn.Linear(128, out_dim),
+            nn.Dropout(p_drop),
+            nn.Linear(64, out_dim),
             nn.ReLU(inplace=True),
+            nn.Dropout(p_drop),
         )
 
     def forward(self, a: torch.Tensor) -> torch.Tensor:  # a: (B, 7)
@@ -111,13 +111,14 @@ class QNetwork(nn.Module):
     def __init__(
         self,
         hidden_layers: Sequence[int] | None = None,
-        state_embed_dim: int = 256,
-        action_embed_dim: int = 256,
+        state_embed_dim: int = 128,
+        action_embed_dim: int = 128,
+        p_drop=0.0,
     ) -> None:
         super().__init__()
-        hidden_layers = list(hidden_layers or [512])
-        self.state_encoder = StateEncoderCNN(out_dim=state_embed_dim)
-        self.action_encoder = ActionEncoderFC(out_dim=action_embed_dim)
+        hidden_layers = list(hidden_layers or [128])
+        self.state_encoder = StateEncoderCNN(out_dim=state_embed_dim, p_drop=p_drop)
+        self.action_encoder = ActionEncoderFC(out_dim=action_embed_dim, p_drop=p_drop)
 
         layers: List[nn.Module] = []
         in_dim = state_embed_dim + action_embed_dim
@@ -308,6 +309,7 @@ class Trainer:
         self.q_net = q_net.to(self.device)
         self.q_target = copy.deepcopy(self.q_net).eval()  # frozen target
         self.norm = normaliser
+        self.target_type = target_type
 
         self.train_loader = DataLoader(
             train_ds,
@@ -397,6 +399,7 @@ class Trainer:
     # ------------------------- public API ---------------------------------- #
 
     def train(self):
+        best_val, patience = float("inf"), 10
         for epoch in range(1, self.epochs + 1):
             self.current_epoch = epoch
             tr_loss = self._epoch(self.train_loader, True)
@@ -405,6 +408,21 @@ class Trainer:
             print(
                 f"[Epoch {epoch}/{self.epochs}] train_loss={tr_loss:.4f} | val_loss={val_loss:.4f}"
             )
+            if val_loss < best_val:
+                best_val = val_loss
+                patience = 3
+                self.save(f"models/{self.target_type}/best.pt")
+            else:
+                patience -= 1
+                if patience == 0:
+                    print("Early stopping")
+                    break
+        self.q_target.load_state_dict(self.q_net.state_dict())
+        self.q_target.eval()
+        self.save(f"models/{self.target_type}/final.pt")
+        wandb.log({"final/val_loss": self.evaluate()})
+        wandb.finish()
+
 
     def evaluate(self):
         return self._epoch(self.val_loader, False)
@@ -441,19 +459,21 @@ class Trainer:
 
 def _objective(trial: optuna.Trial, train_paths: List[Path], val_paths: List[Path], epochs: int, target_type: str, device):
     # hyper‑parameters
-    lr = trial.suggest_loguniform("lr", 1e-5, 1e-3)
-    weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-2)
+    lr = trial.suggest_loguniform("lr", 1e-4, 1e-3)
+    weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-4)
     batch_size = trial.suggest_categorical("batch_size", [32, 64, 128])
 
     # network structure
     n_layers = trial.suggest_int("n_layers", 3, 5)
-    hidden_dim = trial.suggest_categorical("hidden_dim", [256, 512, 1024])
+    hidden_dim = trial.suggest_categorical("hidden_dim", [512])
     hidden_layers = [hidden_dim] * n_layers
+
+    p_drop = trial.suggest_float("p_drop", 0.0, 0.1, step=0.05)
 
     stats = compute_stats(train_paths)
     norm = Normaliser(stats, device)
 
-    q_net = QNetwork(hidden_layers=hidden_layers)
+    q_net = QNetwork(hidden_layers=hidden_layers,p_drop=p_drop)
     trainer = Trainer(
         q_net,
         ShardedSoccerDataset(train_paths, True),
@@ -477,8 +497,6 @@ def _objective(trial: optuna.Trial, train_paths: List[Path], val_paths: List[Pat
 
 def run_optuna(shards_dir: Path, trials: int, epochs: int, target_type: str, device):
     train_paths, val_paths = make_train_val(shards_dir)
-    # train_paths = train_paths[:3] # For fast testing
-    # val_paths = val_paths[:1] # For fast testing
     study = optuna.create_study(direction="minimize")
     study.optimize(
         lambda t: _objective(t, train_paths, val_paths, epochs, target_type,device),
@@ -502,27 +520,10 @@ if __name__ == "__main__":
     ap.add_argument("--shards", type=Path, default="./data/processed")
     ap.add_argument("--epochs", type=int, default=10)
     ap.add_argument("--target", choices=["mc", "td0"], default="td0")
-    ap.add_argument("--trials", type=int, default=64)
+    ap.add_argument("--trials" ,type=int, default=64)
     ap.add_argument("--device", type=str, default='cuda:0')
 
     args = ap.parse_args()
 
-    if args.trials > 0:
-        run_optuna(args.shards, args.trials, args.epochs, args.target, args.device)
-    # else:
-    #     train_paths, val_paths = make_train_val(args.shards)
-    #     stats = compute_stats(train_paths)
-    #     norm = Normaliser(stats, "cuda" if torch.cuda.is_available() else "cpu")
+    run_optuna(args.shards, args.trials, args.epochs, args.target, args.device)
 
-    #     q_net = QNetwork()
-    #     trainer = Trainer(
-    #         q_net,
-    #         ShardedSoccerDataset(train_paths, True),
-    #         ShardedSoccerDataset(val_paths, False),
-    #         norm,
-    #         epochs=args.epochs,
-    #         target_type=args.target,
-    #         project="offline-soccer-rl",
-    #     )
-    #     trainer.train()
-    #     wandb.finish()
