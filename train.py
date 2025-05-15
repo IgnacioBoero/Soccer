@@ -44,8 +44,8 @@ class Normaliser:
 
     # Execute normalization
     def state(self, x: torch.Tensor) -> torch.Tensor:
-        return (x - self.state_mean) / self.state_std
-        #return x
+        #return (x - self.state_mean) / self.state_std
+        return x
     def action(self, a: torch.Tensor) -> torch.Tensor:
         return (a - self.action_mean) / self.action_std
 
