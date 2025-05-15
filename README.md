@@ -24,4 +24,4 @@ Script to train the models:
 ### 3. eval.ipynb
 Script to evaluate the model
 - Python notebook that loads the model and an event and calculates the return for passes, shot and dribbles
-- To avoid having to train a model, we have one of the trained models in models_example. Also, we provide an example processed shard [here](https://drive.google.com/file/d/1xfwpLU3eR2xzAf-rAJM9gpkL1oPUo7FP/view?usp=sharing)  which can be downloaded and put in data_example to be able to run the eval.ipynb with a simple example.
+- We provide one trained models in models_example. Also, we provide an example processed shard [here](https://drive.google.com/file/d/1eanI2glIPAxEiEiZp1lH8j4cAYPV3IbK/view?usp=sharing)  which can be downloaded and put in folder data_example to be able to run the eval.ipynb out of the box without processing data or training a model.
