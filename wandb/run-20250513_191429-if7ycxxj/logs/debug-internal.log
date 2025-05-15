@@ -1,7 +1,0 @@
-{"time":"2025-05-13T19:14:29.842334995-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/home/panda/Soccer/wandb/run-20250513_191429-if7ycxxj/logs/debug-core.log"}
-{"time":"2025-05-13T19:14:29.954848371-04:00","level":"INFO","msg":"created new stream","id":"if7ycxxj"}
-{"time":"2025-05-13T19:14:29.954900702-04:00","level":"INFO","msg":"stream: started","id":"if7ycxxj"}
-{"time":"2025-05-13T19:14:29.954916842-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"if7ycxxj"}
-{"time":"2025-05-13T19:14:29.954937463-04:00","level":"INFO","msg":"handler: started","stream_id":"if7ycxxj"}
-{"time":"2025-05-13T19:14:29.954958213-04:00","level":"INFO","msg":"sender: started","stream_id":"if7ycxxj"}
-{"time":"2025-05-13T19:14:30.102480819-04:00","level":"INFO","msg":"Starting system monitor"}
